@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IA Review — Creative Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #0b0c10;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover: rgba(255, 255, 255, 0.06);
+      --primary: #8b5cf6;
+      --primary-glow: rgba(139, 92, 246, 0.25);
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --tag-bg: rgba(139, 92, 246, 0.15);
+      --tag-text: #c084fc;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 80px; }
+    header { max-width: 1100px; margin: 0 auto; padding: 60px 20px 40px; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--card-border); }
+    .hero-title h1 { font-size: 2.8rem; font-weight: 700; background: linear-gradient(135deg, #fff 0%, #9ca3af 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-title p { color: var(--text-muted); font-size: 1.1rem; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: var(--tag-bg); color: var(--tag-text); border-radius: 20px; font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(139, 92, 246, 0.3); }
+    .container { max-width: 1100px; margin: 40px auto 0; padding: 0 20px; }
+    .section-title { font-size: 1.4rem; font-weight: 600; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+    .section-title::before { content: ''; display: inline-block; width: 4px; height: 20px; background: var(--primary); border-radius: 2px; }
+    
+    .reviews-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; margin-bottom: 60px; }
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; transition: all 0.25s ease; display: flex; flex-direction: column; justify-content: space-between; }
+    .card:hover { background: var(--card-hover); border-color: rgba(255, 255, 255, 0.2); transform: translateY(-4px); box-shadow: 0 12px 30px var(--primary-glow); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .card-date { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+    .card-title { font-size: 1.3rem; font-weight: 600; margin-bottom: 12px; color: #fff; }
+    .card-summary { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; }
+    
+    .btn-doc { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; background: var(--tag-bg); color: var(--tag-text); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 10px; font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: all 0.2s; }
+    .btn-doc:hover { background: var(--primary); color: #fff; }
+
+    /* Modal Iframe */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+    .modal-overlay.active { display: flex; }
+    .modal-content { background: #13151b; border: 1px solid var(--card-border); border-radius: 20px; max-width: 900px; width: 100%; height: 80vh; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+    .modal-header { padding: 16px 24px; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; }
+    .modal-close { background: rgba(255, 255, 255, 0.08); border: none; color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1rem; }
+    .modal-iframe { width: 100%; height: 100%; border: none; background: #fff; }
+
+    /* Boîte à idées */
+    .ideas-section { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 32px; margin-top: 40px; }
+    .form-group { display: flex; gap: 12px; margin-top: 20px; }
+    input[type="text"] { flex: 1; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); border-radius: 10px; padding: 12px 16px; color: #fff; outline: none; }
+    button.btn-submit { background: var(--primary); color: #fff; border: none; border-radius: 10px; padding: 12px 24px; font-weight: 600; cursor: pointer; }
+    .ideas-list { margin-top: 24px; display: flex; flex-direction: column; gap: 12px; }
+    .idea-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--card-border); padding: 14px 18px; border-radius: 10px; }
+    .vote-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); color: var(--text-muted); padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="hero-title">
+      <h1>IA Review</h1>
+      <p>Veille créative, outils & inspirations IA de l'agence</p>
+    </div>
+    <div class="badge">✨ Mise à jour mensuelle</div>
+  </header>
+
+  <div class="container">
+    <div class="section-title">Reviews récentes</div>
+    <div class="reviews-grid" id="grid"></div>
+
+    <div class="ideas-section">
+      <div class="section-title">Boîte à idées & Prochains sujets</div>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Un outil à tester, un workflow à présenter ? Soumettez vos idées !</p>
+      <form class="form-group" onsubmit="addIdea(event)">
+        <input type="text" id="ideaInput" placeholder="Ex: Tester Midjourney v7..." required>
+        <button type="submit" class="btn-submit">Proposer</button>
+      </form>
+      <div class="ideas-list" id="ideasList">
+        <div class="idea-item">
+          <span>Workflow ComfyUI appliqué à la retouche beauté</span>
+          <button class="vote-btn" onclick="vote(this)">▲ <span class="count">8</span> votes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal pour lire le Doc/Slides directement -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOuter(event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span id="modalTitle" style="font-weight: 600;">Consultation du document</span>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <iframe class="modal-iframe" id="modalIframe" src=""></iframe>
+    </div>
+  </div>
+
+  <script>
+    // LISTE DE TES REVIEWS (Tu ajoutes juste ton nouveau lien Google Docs/Slides ici)
+    const reviews = [
+      {
+        date: "Octobre",
+        badge: "Review #03",
+        title: "Magnific, Snickers AI & Mini Studio",
+        summary: "Focus sur la préparation 3D dans Magnific, la campagne interactive Snickers Hungr.ai et le projet Mini Studio.",
+        embedUrl: "https://docs.google.com/presentation/d/1pCr6kh9NFO4WY2_qp7ZIhX8dzDisSpQnNrB_DE1zdCQ/embed?start=false&loop=false",
+        directUrl: "https://docs.google.com/presentation/d/1pCr6kh9NFO4WY2_qp7ZIhX8dzDisSpQnNrB_DE1zdCQ/edit"
+      },
+      {
+        date: "Septembre",
+        badge: "Review #02",
+        title: "Audio IA, ElevenLabs & WPP",
+        summary: "Les grands accords dans la musique IA (Universal x ElevenLabs, Suno) et le workflow de prod WPP x BytePlus.",
+        embedUrl: "https://docs.google.com/presentation/d/13WWonRpYcW5DFSUuLWEmg5KwoFXSEgY7cBZvdvI1SEg/embed?start=false&loop=false",
+        directUrl: "https://docs.google.com/presentation/d/13WWonRpYcW5DFSUuLWEmg5KwoFXSEgY7cBZvdvI1SEg/edit"
+      },
+      {
+        date: "Août",
+        badge: "Review #01",
+        title: "Freepik, Adobe Firefly & Video IA",
+        summary: "Lancement de l'app desktop Magnific, gestion des crédits Firefly et démos vidéos Seedance & Runway.",
+        embedUrl: "https://docs.google.com/presentation/d/1Jbn7AnEmwZDUZnjtK1RkXYHx3LcQzJx7hfuw8s3XLzY/embed?start=false&loop=false",
+        directUrl: "https://docs.google.com/presentation/d/1Jbn7AnEmwZDUZnjtK1RkXYHx3LcQzJx7hfuw8s3XLzY/edit"
+      }
+    ];
+
+    function renderGrid() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = reviews.map((item, index) => `
+        <div class="card">
+          <div>
+            <div class="card-header">
+              <span class="card-date">${item.date}</span>
+              <span class="badge">${item.badge}</span>
+            </div>
+            <h2 class="card-title">${item.title}</h2>
+            <p class="card-summary">${item.summary}</p>
+          </div>
+          <button class="btn-doc" onclick="openDoc(${index})">
+            📄 Feuilleter la présentation
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function openDoc(index) {
+      const item = reviews[index];
+      document.getElementById('modalTitle').textContent = `${item.date} — ${item.title}`;
+      document.getElementById('modalIframe').src = item.embedUrl;
+      document.getElementById('modalOverlay').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('active');
+      document.getElementById('modalIframe').src = '';
+    }
+
+    function closeModalOnOuter(e) {
+      if (e.target.id === 'modalOverlay') closeModal();
+    }
+
+    function addIdea(e) {
+      e.preventDefault();
+      const input = document.getElementById('ideaInput');
+      if (!input.value.trim()) return;
+      document.getElementById('ideasList').insertAdjacentHTML('afterbegin', `
+        <div class="idea-item">
+          <span>${input.value}</span>
+          <button class="vote-btn" onclick="vote(this)">▲ <span class="count">1</span> vote</button>
+        </div>
+      `);
+      input.value = '';
+    }
+
+    function vote(btn) {
+      const count = btn.querySelector('.count');
+      count.textContent = parseInt(count.textContent) + 1;
+      btn.style.color = '#fff';
+      btn.style.borderColor = 'var(--primary)';
+    }
+
+    renderGrid();
+  </script>
+</body>
+</html>
